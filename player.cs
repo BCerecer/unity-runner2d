@@ -7,7 +7,11 @@ public class player : MonoBehaviour
     public Rigidbody2D rigidBod;
     public float runSpeed;                                                  //runSpeed is the speed set by user
     float velocity;                                                         //velocity is used to change direction of player using runSpeed
-    float accelerationClick;
+    bool click = false;                                                     //click is used to maked sure that each click last 2sec
+    float timer = 0;
+    float speedMultiplier = 1;
+    int clickCounter = 0;
+    bool tired = false;
     public float tiredSpeed;
 
     // Start is called before the first frame update
@@ -20,17 +24,36 @@ public class player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Debug.Log(transform.position.x);
-        //Debug.Log("Velocity " + rigidBod.velocity);
-                   
+        //handles input; if click=true, start clickCounter; accelerate for 2s from last click
+        if ( Input.GetKeyDown("right") )
+        {
+            click = true;
+            handleClickCounter();
+        }
+
+        if (click)
+            startTimer();
+
+        Debug.Log(clickCounter);
+
+        //accelerationClick = velocity * Input.GetKey("right"); ;       //velocity * true/false
 
     }
 
     void FixedUpdate()
     {
-        rigidBod.velocity = new Vector2(velocity + accelerationClick, rigidBod.velocity.y); 
+        if (timer > 0 && timer < 2)
+        {
+            rigidBod.velocity = new Vector2( velocity * 2, rigidBod.velocity.y );
+        }
+        else
+        {
+            rigidBod.velocity = new Vector2( velocity, rigidBod.velocity.y );
+        }
+
         Flip();
     }
+
 
     void Flip()
     {
@@ -59,4 +82,41 @@ public class player : MonoBehaviour
             transform.localScale = charscale;
         }
     }
+
+    //makes sure that te interval of acceleration is 2s; resets clickCounter after 2s
+    void startTimer()
+    {
+        timer += Time.deltaTime;
+        
+        if (timer > 2)
+        {
+            click = false;
+            timer = 0;
+            resetClickCounter();
+        }
+    }
+
+    void resetTimer()
+    {
+        timer = 0;
+    }
+
+    //only let's you accelerate 3 times max; resets timer for every click
+    void handleClickCounter()
+    {
+        if (clickCounter <= 2)
+        {
+            clickCounter += 1;
+            resetTimer();
+        }
+    }
+
+    void resetClickCounter()
+    {
+        if (clickCounter == 3)
+            tired = true;
+
+        clickCounter = 0;
+    }   
+
 }
