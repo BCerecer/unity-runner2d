@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class player : MonoBehaviour
+public class Character : MonoBehaviour
 {
     public Rigidbody2D rigidBod;
+    public Animator anim;
     public float runSpeed;                                                  //runSpeed is the speed set by user
     float velocity;                                                         //velocity is used to change direction of player using runSpeed
     bool click = false;                                                     //click is used to maked sure that each click last 2sec
@@ -12,20 +13,25 @@ public class player : MonoBehaviour
     float speedMultiplier = 1;
     int clickCounter = 0;
     bool tired = false;
+    float tiredTimer = 0;
     public float tiredSpeed;
+
+    public BrickLeft[] left;
 
     // Start is called before the first frame update
     void Start()
     {
         rigidBod = GetComponent<Rigidbody2D>();
         velocity = -runSpeed;
+        left = FindObjectsOfType<BrickLeft>();
+        anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
         //handles input; if click=true, start clickCounter; accelerate for 2s from last click
-        if ( Input.GetKeyDown("right") )
+        if (Input.GetKeyDown("right"))
         {
             click = true;
             handleClickCounter();
@@ -34,7 +40,10 @@ public class player : MonoBehaviour
         if (click)
             startTimer();
 
-        Debug.Log(clickCounter);
+        if (tired)
+            startTiredTimer();
+
+
 
         //accelerationClick = velocity * Input.GetKey("right"); ;       //velocity * true/false
 
@@ -42,23 +51,13 @@ public class player : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (timer > 0 && timer < 2)
-        {
-            rigidBod.velocity = new Vector2( velocity * 2, rigidBod.velocity.y );
-        }
-        else
-        {
-            rigidBod.velocity = new Vector2( velocity, rigidBod.velocity.y );
-        }
+        rigidBod.velocity = new Vector2(velocity * speedMultiplier, 0);
 
         Flip();
     }
 
-
     void Flip()
     {
-        //Debug.Log("localscale.x = " + transform.localScale.x);
-
         if (transform.position.x < -2)
         {
             Vector3 charscale = transform.localScale;
@@ -76,7 +75,6 @@ public class player : MonoBehaviour
 
         if (transform.localScale.x == (velocity / runSpeed * 2) )           //If stil going backwards, fix it
         {
-            Debug.Log("IT IS GOING BACKWARDSSSSSSSSSSSSS");
             Vector3 charscale = transform.localScale;
             charscale.x *= -1;
             transform.localScale = charscale;
@@ -91,7 +89,7 @@ public class player : MonoBehaviour
         if (timer > 2)
         {
             click = false;
-            timer = 0;
+            resetTimer();
             resetClickCounter();
         }
     }
@@ -106,6 +104,7 @@ public class player : MonoBehaviour
     {
         if (clickCounter <= 2)
         {
+            speedMultiplier *= 1.3f;
             clickCounter += 1;
             resetTimer();
         }
@@ -114,9 +113,46 @@ public class player : MonoBehaviour
     void resetClickCounter()
     {
         if (clickCounter == 3)
+        {
             tired = true;
+            speedMultiplier = 0f;
+        }
 
         clickCounter = 0;
     }   
 
+    void startTiredTimer()
+    {
+        tiredTimer += Time.deltaTime;
+
+        if (tiredTimer > 2)
+        {
+            Debug.Log("Inside tiredTimer >2");
+            tired = false;
+            resetTiredTimer();
+            resetSpeedMultiplier();
+        }
+    }
+
+    void resetTiredTimer()
+    {
+        tiredTimer = 0;
+    }
+
+    void resetSpeedMultiplier()
+    {
+        speedMultiplier = 1;
+    }
+
+    public void Death()
+    {
+        velocity = 0;
+
+        anim.gameObject.GetComponent<Animator>().enabled = false;
+
+        left[0].SetVelocity(0);
+        left[1].SetVelocity(0);
+        left[2].SetVelocity(0);
+        left[3].SetVelocity(0);
+    }
 }
