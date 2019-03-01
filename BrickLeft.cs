@@ -13,7 +13,7 @@ public class BrickLeft : MonoBehaviour
     {
         rigidBod = GetComponent<Rigidbody2D>();
         character = FindObjectOfType<Character>();
-        velocity = -2.5f;
+        velocity = -2f;
         xRange = Random.Range(-3.7f, -0.3f);
         rigidBod.position = new Vector2(xRange, rigidBod.position.y);
     }
@@ -31,11 +31,11 @@ public class BrickLeft : MonoBehaviour
 
     void OutOfBounds()
     {
-        if (transform.position.y < -15)
+        if (transform.position.y < -18)
         {
             xRange = Random.Range(-3.7f, 0.1f);
             Debug.Log("xRange: " + xRange);
-            rigidBod.position = new Vector2(xRange, 5);
+            rigidBod.position = new Vector2(xRange, 6);
         }
     }
 

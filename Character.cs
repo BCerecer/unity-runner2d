@@ -31,17 +31,14 @@ public class Character : MonoBehaviour
     void Update()
     {
         //handles input; if click=true, start clickCounter; accelerate for 2s from last click
-        if (Input.GetKeyDown("right"))
+        if (Input.GetKey("right"))
         {
-            click = true;
-            handleClickCounter();
+            speedMultiplier = 3.4f;
         }
-
-        if (click)
-            startTimer();
-
-        if (tired)
-            startTiredTimer();
+        else 
+        {
+            speedMultiplier = 1;
+        }
 
 
 
