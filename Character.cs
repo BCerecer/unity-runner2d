@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Character : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class Character : MonoBehaviour
     public float tiredSpeed;
 
     public BrickLeft[] left;
+    public GameMenu gameMenu;
 
     // Start is called before the first frame update
     void Start()
@@ -25,6 +27,7 @@ public class Character : MonoBehaviour
         velocity = -runSpeed;
         left = FindObjectsOfType<BrickLeft>();
         anim = GetComponent<Animator>();
+        gameMenu = FindObjectOfType<GameMenu>();
     }
 
     // Update is called once per frame
@@ -151,5 +154,8 @@ public class Character : MonoBehaviour
         left[1].SetVelocity(0);
         left[2].SetVelocity(0);
         left[3].SetVelocity(0);
+
+        gameMenu.ToggleEndMenu();
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 }
