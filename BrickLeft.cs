@@ -7,6 +7,7 @@ public class BrickLeft : MonoBehaviour
     public Rigidbody2D rigidBod;
     private Character character;
     private float velocity;
+    float horizontalCorner;
     float xRange;
     // Start is called before the first frame update
     void Start()
@@ -14,7 +15,8 @@ public class BrickLeft : MonoBehaviour
         rigidBod = GetComponent<Rigidbody2D>();
         character = FindObjectOfType<Character>();
         velocity = -2f;
-        xRange = Random.Range(-3.7f, -0.3f);
+        horizontalCorner = Camera.main.aspect * Camera.main.orthographicSize - 1f; //0.8f is half the gap
+        xRange = Random.Range(-horizontalCorner, horizontalCorner);
         rigidBod.position = new Vector2(xRange, rigidBod.position.y);
     }
 
@@ -33,8 +35,7 @@ public class BrickLeft : MonoBehaviour
     {
         if (transform.position.y < -18)
         {
-            xRange = Random.Range(-3.7f, 0.1f);
-            Debug.Log("xRange: " + xRange);
+            xRange = Random.Range(-horizontalCorner, horizontalCorner);
             rigidBod.position = new Vector2(xRange, 6);
         }
     }

@@ -9,13 +9,8 @@ public class Character : MonoBehaviour
     public Animator anim;
     public float runSpeed;                                                  //runSpeed is the speed set by user
     float velocity;                                                         //velocity is used to change direction of player using runSpeed
-    bool click = false;                                                     //click is used to maked sure that each click last 2sec
-    float timer = 0;
     float speedMultiplier = 1;
-    int clickCounter = 0;
-    bool tired = false;
-    float tiredTimer = 0;
-    public float tiredSpeed;
+    float widthWorldUnits;
 
     public BrickLeft[] left;
     public GameMenu gameMenu;
@@ -28,6 +23,8 @@ public class Character : MonoBehaviour
         left = FindObjectsOfType<BrickLeft>();
         anim = GetComponent<Animator>();
         gameMenu = FindObjectOfType<GameMenu>();
+
+        widthWorldUnits = Camera.main.aspect * Camera.main.orthographicSize - 0.35f; //Camera aspect=ratio. OrtographicSize=5. 0.35f=fixed around half size of character
     }
 
     // Update is called once per frame
@@ -58,14 +55,14 @@ public class Character : MonoBehaviour
 
     void Flip()
     {
-        if (transform.position.x < -2)
+        if (transform.position.x < -widthWorldUnits)
         {
             Vector3 charscale = transform.localScale;
             charscale.x *= -1;                                              //multiplies value of Vector3.x by -1 to change direction
             transform.localScale = charscale;
             velocity = runSpeed;
         }
-        else if (transform.position.x > 2)
+        else if (transform.position.x > widthWorldUnits)
         {
             Vector3 charscale = transform.localScale;
             charscale.x *= -1;
@@ -81,63 +78,6 @@ public class Character : MonoBehaviour
         }
     }
 
-    //makes sure that te interval of acceleration is 2s; resets clickCounter after 2s
-    void startTimer()
-    {
-        timer += Time.deltaTime;
-        
-        if (timer > 2)
-        {
-            click = false;
-            resetTimer();
-            resetClickCounter();
-        }
-    }
-
-    void resetTimer()
-    {
-        timer = 0;
-    }
-
-    //only let's you accelerate 3 times max; resets timer for every click
-    void handleClickCounter()
-    {
-        if (clickCounter <= 2)
-        {
-            speedMultiplier *= 1.3f;
-            clickCounter += 1;
-            resetTimer();
-        }
-    }
-
-    void resetClickCounter()
-    {
-        if (clickCounter == 3)
-        {
-            tired = true;
-            speedMultiplier = 0f;
-        }
-
-        clickCounter = 0;
-    }   
-
-    void startTiredTimer()
-    {
-        tiredTimer += Time.deltaTime;
-
-        if (tiredTimer > 2)
-        {
-            Debug.Log("Inside tiredTimer >2");
-            tired = false;
-            resetTiredTimer();
-            resetSpeedMultiplier();
-        }
-    }
-
-    void resetTiredTimer()
-    {
-        tiredTimer = 0;
-    }
 
     void resetSpeedMultiplier()
     {
